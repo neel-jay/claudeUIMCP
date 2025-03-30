@@ -1,19 +1,44 @@
 {
   "name": "claude-ui-mcp-server",
   "version": "0.1.0",
-  "description": "Server implementation for Claude UI with MCP support",
-  "main": "src/index.js",
+  "description": "Desktop application for Claude UI with MCP support",
+  "main": "electron/main.js",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "nodemon src/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "test": "jest",
+    "lint": "eslint .",
+    "build": "electron-builder",
+    "build:mac": "electron-builder --mac"
   },
   "keywords": [
     "claude",
     "ui",
     "mcp",
-    "server"
+    "server",
+    "electron",
+    "desktop"
   ],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "electron-store": "^8.1.0",
+    "express": "^4.18.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "ws": "^8.13.0"
+  },
+  "devDependencies": {
+    "electron": "^28.1.0",
+    "electron-builder": "^24.9.1",
+    "eslint": "^8.56.0",
+    "jest": "^29.7.0"
+  },
+  "build": {
+    "appId": "com.neeljay.claude-ui-mcp-server",
+    "productName": "Claude UI MCP Server",
+    "mac": {
+      "category": "public.app-category.developer-tools"
+    }
+  }
 }

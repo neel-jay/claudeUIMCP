@@ -9,6 +9,8 @@ dist/
 build/
 *.pyc
 __pycache__/
+out/
+release/
 
 # Logs
 logs/
@@ -27,3 +29,7 @@ yarn-error.log*
 # OS specific files
 .DS_Store
 Thumbs.db
+
+# Electron build artifacts
+*.dmg
+*.zip
