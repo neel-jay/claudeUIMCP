@@ -59,10 +59,15 @@ server.listen(PORT, () => {
   console.log(`Development server running at http://localhost:${PORT}/`);
   console.log('Starting Electron...');
   
-  // Start Electron
-  const electron = spawn('electron', ['.', '--dev'], { 
+// Start Electron with debug flags
+  const electron = spawn('electron', ['.', '--dev', '--enable-logging'], { 
     stdio: 'inherit',
-    shell: true
+    shell: true,
+    env: {
+      ...process.env,
+      ELECTRON_ENABLE_LOGGING: 1,
+      DEBUG: '*'
+    }
   });
   
   electron.on('close', (code) => {
