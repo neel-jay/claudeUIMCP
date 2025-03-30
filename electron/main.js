@@ -198,29 +198,84 @@ function startServer() {
     return;
   }
 
-  const MCPServer = require('./server');
+  const MCPServer = require('../src/server');
   const config = store.get('serverConfig', {
     port: 3030,
     host: 'localhost'
   });
 
   server = new MCPServer(config);
+  
+  // Set up server event handlers
+  server.on('started', (data) => {
+    console.log(`Server started on ${data.host}:${data.port}`);
+    if (mainWindow) {
+      mainWindow.webContents.send('server-status', {
+        status: 'running',
+        config: {
+          host: data.host,
+          port: data.port
+        },
+        startTime: data.timestamp
+      });
+    }
+  });
+  
+  server.on('stopped', (data) => {
+    console.log('Server stopped');
+    if (mainWindow) {
+      mainWindow.webContents.send('server-status', {
+        status: 'stopped',
+        uptime: data.uptime
+      });
+    }
+  });
+  
+  server.on('error', (data) => {
+    console.error('Server error:', data.error);
+    if (mainWindow) {
+      mainWindow.webContents.send('server-status', {
+        status: 'error',
+        error: data.error.message || 'Unknown server error'
+      });
+    }
+  });
+  
+  server.on('connection', (data) => {
+    console.log(`New client connected: ${data.id} from ${data.ipAddress}`);
+    
+    if (mainWindow) {
+      mainWindow.webContents.send('connection-update', {
+        type: 'new',
+        connection: {
+          id: data.id,
+          ipAddress: data.ipAddress,
+          userAgent: data.userAgent,
+          connected: data.timestamp,
+          lastActivity: data.timestamp
+        }
+      });
+    }
+  });
+  
+  server.on('disconnection', (data) => {
+    console.log(`Client disconnected: ${data.id}`);
+    
+    if (mainWindow) {
+      mainWindow.webContents.send('connection-update', {
+        type: 'closed',
+        connectionId: data.id
+      });
+    }
+  });
+
   server.start()
-    .then(() => {
-      console.log(`Server started on ${config.host}:${config.port}`);
-      if (mainWindow) {
-        mainWindow.webContents.send('server-status', {
-          status: 'running',
-          config
-        });
-      }
-    })
     .catch(err => {
       console.error('Failed to start server:', err);
       if (mainWindow) {
         mainWindow.webContents.send('server-status', {
           status: 'error',
-          error: err.message
+          error: err.message || 'Failed to start server'
         });
       }
     });
@@ -234,21 +289,34 @@ function stopServer() {
   }
 
   server.stop()
-    .then(() => {
-      console.log('Server stopped');
-      server = null;
-      if (mainWindow) {
-        mainWindow.webContents.send('server-status', {
-          status: 'stopped'
-        });
-      }
-    })
     .catch(err => {
       console.error('Failed to stop server:', err);
       if (mainWindow) {
         mainWindow.webContents.send('server-status', {
           status: 'error',
-          error: err.message
+          error: err.message || 'Failed to stop server'
+        });
+      }
+    });
+}
+
+// Restart the MCP server
+function restartServer() {
+  if (!server) {
+    startServer();
+    return;
+  }
+  
+  server.restart()
+    .then(() => {
+      console.log('Server restarted');
+    })
+    .catch(err => {
+      console.error('Failed to restart server:', err);
+      if (mainWindow) {
+        mainWindow.webContents.send('server-status', {
+          status: 'error',
+          error: err.message || 'Failed to restart server'
         });
       }
     });

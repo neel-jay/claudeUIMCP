@@ -1,0 +1,9 @@
+{
+  "name": "example-plugin",
+  "version": "0.1.0",
+  "description": "An example plugin for Claude UI MCP Server",
+  "author": "Claude AI",
+  "main": "index.js",
+  "dependencies": {},
+  "enabled": true
+}
