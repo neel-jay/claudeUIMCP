@@ -1,0 +1,19 @@
+{
+  "name": "claude-ui-mcp-server",
+  "version": "0.1.0",
+  "description": "Server implementation for Claude UI with MCP support",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "claude",
+    "ui",
+    "mcp",
+    "server"
+  ],
+  "author": "",
+  "license": "MIT"
+}
