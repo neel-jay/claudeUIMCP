@@ -5,7 +5,7 @@
   "main": "electron/main.js",
   "scripts": {
     "start": "electron .",
-    "dev": "electron . --dev",
+    "dev": "node start-dev.js",
     "test": "jest",
     "lint": "eslint .",
     "build": "electron-builder",

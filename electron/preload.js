@@ -3,7 +3,14 @@ const { contextBridge, ipcRenderer } = require('electron');
 // Expose selected APIs to the renderer process
 contextBridge.exposeInMainWorld('electron', {
   // Server controls
-  getServerStatus: () => ipcRenderer.invoke('get-server-status'),
+  getServerStatus: async () => {
+    try {
+      return await ipcRenderer.invoke('get-server-status');
+    } catch (error) {
+      console.error('Error getting server status:', error);
+      return { status: 'unknown', config: {} };
+    }
+  },
   startServer: () => ipcRenderer.send('start-server'),
   stopServer: () => ipcRenderer.send('stop-server'),
   

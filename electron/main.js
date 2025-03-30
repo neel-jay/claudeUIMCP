@@ -1,6 +1,7 @@
 const { app, BrowserWindow, Menu, Tray, ipcMain } = require('electron');
 const path = require('path');
 const url = require('url');
+const fs = require('fs');
 const Store = require('electron-store');
 
 // Initialize the store for app configuration
@@ -132,49 +133,62 @@ function createMenu() {
 }
 
 function createTray() {
-  tray = new Tray(path.join(__dirname, '../assets/tray-icon.png'));
-  const contextMenu = Menu.buildFromTemplate([
-    {
-      label: 'Show App',
-      click: () => {
-        if (mainWindow === null) {
-          createWindow();
-        } else {
-          mainWindow.show();
+  try {
+    const trayIconPath = path.join(__dirname, '../assets/tray-icon.png');
+    
+    // Check if the tray icon exists
+    if (!fs.existsSync(trayIconPath)) {
+      console.warn(`Tray icon not found at: ${trayIconPath}`);
+      return; // Skip tray creation
+    }
+    
+    tray = new Tray(trayIconPath);
+    const contextMenu = Menu.buildFromTemplate([
+      {
+        label: 'Show App',
+        click: () => {
+          if (mainWindow === null) {
+            createWindow();
+          } else {
+            mainWindow.show();
+          }
+        }
+      },
+      {
+        label: 'Start Server',
+        click: () => {
+          startServer();
+        }
+      },
+      {
+        label: 'Stop Server',
+        click: () => {
+          stopServer();
+        }
+      },
+      { type: 'separator' },
+      {
+        label: 'Quit',
+        click: () => {
+          app.quit();
         }
       }
-    },
-    {
-      label: 'Start Server',
-      click: () => {
-        startServer();
-      }
-    },
-    {
-      label: 'Stop Server',
-      click: () => {
-        stopServer();
-      }
-    },
-    { type: 'separator' },
-    {
-      label: 'Quit',
-      click: () => {
-        app.quit();
-      }
-    }
-  ]);
+    ]);
 
-  tray.setToolTip('Claude UI MCP Server');
-  tray.setContextMenu(contextMenu);
+    tray.setToolTip('Claude UI MCP Server');
+    tray.setContextMenu(contextMenu);
 
-  tray.on('click', () => {
-    if (mainWindow === null) {
-      createWindow();
-    } else {
-      mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show();
-    }
-  });
+    tray.on('click', () => {
+      if (mainWindow === null) {
+        createWindow();
+      } else {
+        mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show();
+      }
+    });
+  } catch (error) {
+    console.error('Failed to create tray:', error);
+    // Continue without the tray
+  }
 }
 
 // Start the MCP server
@@ -249,7 +263,17 @@ function restartServer() {
 }
 
 // Handle IPC messages from the renderer process
-ipcMain.on('get-server-status', (event) => {
+ipcMain.handle('get-server-status', () => {
+  return {
+    status: server ? 'running' : 'stopped',
+    config: store.get('serverConfig', {
+      port: 3030,
+      host: 'localhost'
+    })
+  };
+});
+
+ipcMain.on('get-server-status-legacy', (event) => {
   event.reply('server-status', {
     status: server ? 'running' : 'stopped',
     config: store.get('serverConfig', {
