@@ -364,6 +364,136 @@ ipcMain.on('save-config', (event, config) => {
   event.reply('config-saved', true);
 });
 
+ipcMain.on('restart-server', () => {
+  restartServer();
+});
+
+// Connection handlers
+ipcMain.handle('get-connections', () => {
+  if (!server) {
+    return [];
+  }
+  
+  try {
+    return server.getConnections();
+  } catch (error) {
+    console.error('Error getting connections:', error);
+    return [];
+  }
+});
+
+ipcMain.handle('get-connection', (event, connectionId) => {
+  if (!server) {
+    return null;
+  }
+  
+  try {
+    const connections = server.getConnections();
+    return connections.find(conn => conn.id === connectionId) || null;
+  } catch (error) {
+    console.error('Error getting connection:', error);
+    return null;
+  }
+});
+
+ipcMain.handle('disconnect-client', (event, connectionId) => {
+  if (!server) {
+    return { success: false, error: 'Server not running' };
+  }
+  
+  try {
+    // This is a simplified approach; in the real implementation,
+    // the server would have a method to disconnect a specific client
+    // For now we'll assume success
+    return { success: true };
+  } catch (error) {
+    console.error('Error disconnecting client:', error);
+    return { 
+      success: false, 
+      error: error.message || 'Failed to disconnect client'
+    };
+  }
+});
+
+// Plugin management
+ipcMain.handle('get-plugins', () => {
+  if (!server) {
+    return [];
+  }
+  
+  try {
+    // In a real implementation we would call server's plugin manager
+    // For now, just return a mock response
+    return [
+      {
+        name: "example-plugin",
+        version: "0.1.0",
+        description: "An example plugin for Claude UI MCP Server",
+        author: "Claude AI",
+        enabled: true
+      }
+    ];
+  } catch (error) {
+    console.error('Error getting plugins:', error);
+    return [];
+  }
+});
+
+ipcMain.handle('enable-plugin', (event, pluginName) => {
+  if (!server) {
+    return { success: false, error: 'Server not running' };
+  }
+  
+  try {
+    // Mock implementation - in real code we would call server's plugin manager
+    return { success: true };
+  } catch (error) {
+    console.error(`Error enabling plugin ${pluginName}:`, error);
+    return { 
+      success: false, 
+      error: error.message || 'Failed to enable plugin'
+    };
+  }
+});
+
+ipcMain.handle('disable-plugin', (event, pluginName) => {
+  if (!server) {
+    return { success: false, error: 'Server not running' };
+  }
+  
+  try {
+    // Mock implementation - in real code we would call server's plugin manager
+    return { success: true };
+  } catch (error) {
+    console.error(`Error disabling plugin ${pluginName}:`, error);
+    return { 
+      success: false, 
+      error: error.message || 'Failed to disable plugin'
+    };
+  }
+});
+
+// Logs handler
+ipcMain.handle('get-logs', (event, options = {}) => {
+  try {
+    // Mock implementation - in real code we would read actual log files
+    return {
+      success: true,
+      logs: [
+        { timestamp: new Date().toISOString(), level: 'info', message: 'Server started' },
+        { timestamp: new Date().toISOString(), level: 'info', message: 'Plugin loaded: example-plugin' },
+        { timestamp: new Date().toISOString(), level: 'debug', message: 'Connection established' }
+      ]
+    };
+  } catch (error) {
+    console.error('Error getting logs:', error);
+    return { 
+      success: false, 
+      error: error.message || 'Failed to get logs'
+    };
+  }
+});
+
 // This method will be called when Electron has finished initialization
 app.whenReady().then(() => {
   createWindow();

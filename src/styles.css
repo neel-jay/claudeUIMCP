@@ -261,6 +261,71 @@ body {
   background-color: var(--gray-100);
 }
 
+/* Plugin and Connection Details Styles */
+.detail-row {
+  display: flex;
+  margin-bottom: 0.5rem;
+}
+
+.detail-label {
+  font-weight: 500;
+  width: 150px;
+  color: var(--gray-700);
+}
+
+.detail-value {
+  flex: 1;
+}
+
+.connections-container {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.log-container {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+tr.active {
+  background-color: var(--primary-color) !important;
+  color: white;
+}
+
+tr.active:hover {
+  background-color: var(--primary-dark) !important;
+}
+
+/* Status indicator styles for connections */
+.status-indicator {
+  display: inline-block;
+  height: 8px;
+  width: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+.status-success {
+  background-color: var(--success-color);
+}
+
+.status-warning {
+  background-color: var(--warning-color);
+}
+
+.status-error {
+  background-color: var(--danger-color);
+}
+
+/* Log styles */
+.log-filters {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
 /* Utilities */
 .mt-1 { margin-top: 0.25rem; }
 .mt-2 { margin-top: 0.5rem; }

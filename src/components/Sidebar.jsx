@@ -4,6 +4,8 @@ export const Sidebar = ({ currentView, onChangeView }) => {
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: '📊' },
     { id: 'connections', label: 'Connections', icon: '🔌' },
+    { id: 'plugins', label: 'Plugins', icon: '🔧' },
+    { id: 'logs', label: 'Logs', icon: '📝' },
     { id: 'settings', label: 'Settings', icon: '⚙️' },
   ];
 

@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Dashboard } from './views/Dashboard';
 import { Settings } from './views/Settings';
-import { Connections } from './views/Connections';
+import { ConnectionsEnhanced as Connections } from './views/ConnectionsEnhanced';
+import { Plugins } from './views/Plugins';
+import { Logs } from './views/Logs';
 import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
 
@@ -44,6 +46,10 @@ const App = () => {
         return <Settings serverStatus={serverStatus} />;
       case 'connections':
         return <Connections />;
+      case 'plugins':
+        return <Plugins />;
+      case 'logs':
+        return <Logs />;
       default:
         return <Dashboard serverStatus={serverStatus} />;
     }
